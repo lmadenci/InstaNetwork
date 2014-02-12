@@ -25,7 +25,7 @@ mediaID=re.findall(r'Media: (\d+_\d+)',media)
 usernames=[]
 comments=""
 likes=""
-print "im about to start the loop of putting users into a list"
+print "Starting the loop that puts users into a list..."
 for each in mediaID:
     comments=comments+str(api.media_comments(media_id=each))
     likes=likes+str(api.media_likes(media_id=each))
@@ -37,8 +37,8 @@ likes=likes.replace("]"," ")
 
 usrComm=re.findall(r'Comment: (\S+)',comments)
 usrLike=re.findall(r'\[?User: (\S+)', likes)
-###you can use REDIS SINTER HERE
-print "im gonna now add commenters/likers to the list"
+###use REDIS SINTER HERE
+print "Adding commenters/likers to the list..."
 for each in usrComm:
     if each not in usernames:
         usernames.append(each)
@@ -67,35 +67,16 @@ for each in usernames:
 #get the data:::get follows for each user, get followed by for each 
 red=redis.Redis()
 
-##gotta listify the strings
+##listify the strings
+##UNDER CONSTRUCTION:
 print "now i'm at the redis part"
 for each in listID:
     idInt=int(each)
     follows=api.user_follows(user_id=idInt) #returns a list
     followedBy=api.user_followed_by(user_id=idInt) #returns a list of ids
-    ####now get rid of dups aka intersect
+    ####now get rid of dups by using redis intersect
     connectList=red.sinterstore('connections', follows, followedBy)
     print connectList
 
 
 
-
-
-
-
-
-#exexexex
-#f = open('output.json', 'w')
-#f.write(dumps(json_obj, indent=4))
-#f.close()
-
-
-
-
-
-#for each in json:
-    
-
-
-
-#translates KEYWORD restults with GET function into text
